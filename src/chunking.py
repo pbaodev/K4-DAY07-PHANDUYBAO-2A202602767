@@ -116,6 +116,59 @@ class RecursiveChunker:
         return chunks
 
 
+class HeadingChunker:
+    """
+    Split Markdown on heading lines: each section (text under one heading) becomes a chunk.
+
+    Regulation documents are written as numbered sections, so a section is already a
+    self-contained unit chosen by the author. Every chunk starts with its heading path
+    (e.g. "Title > 5. Mượn/trả > a. Mượn tài liệu") so it keeps its context; a section
+    longer than chunk_size is split further with RecursiveChunker and each sub-chunk
+    gets the same heading path.
+    """
+
+    HEADING_PATTERN = re.compile(r"^(#{1,6})\s+(.*\S)\s*$")
+
+    def __init__(self, chunk_size: int = 500, max_level: int = 3) -> None:
+        self.chunk_size = chunk_size
+        self.max_level = max_level
+
+    def chunk(self, text: str) -> list[str]:
+        if not text or not text.strip():
+            return []
+
+        sections: list[tuple[str, str]] = []  # (heading path, body)
+        path: list[tuple[int, str]] = []
+        body: list[str] = []
+
+        def flush() -> None:
+            content = "\n".join(body).strip()
+            # A heading with no body of its own (e.g. "## 5." directly followed by "### a.")
+            # emits nothing: its title lives on in its children's heading path.
+            if content:
+                sections.append((" > ".join(title for _, title in path), content))
+            body.clear()
+
+        for line in text.splitlines():
+            match = self.HEADING_PATTERN.match(line)
+            if match and len(match.group(1)) <= self.max_level:
+                flush()
+                level = len(match.group(1))
+                path[:] = [(lvl, title) for lvl, title in path if lvl < level] + [(level, match.group(2))]
+            else:
+                body.append(line)
+        flush()
+
+        chunks: list[str] = []
+        for heading_path, content in sections:
+            prefix = f"{heading_path}\n" if heading_path else ""
+            # Leave room for the prefix, but never shrink the body budget below half of chunk_size.
+            budget = max(self.chunk_size - len(prefix), self.chunk_size // 2)
+            pieces = [content] if len(content) <= budget else RecursiveChunker(chunk_size=budget).chunk(content)
+            chunks.extend(prefix + piece for piece in pieces)
+        return chunks
+
+
 def _dot(a: list[float], b: list[float]) -> float:
     return sum(x * y for x, y in zip(a, b))
 
