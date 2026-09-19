@@ -52,9 +52,9 @@ Chấm 2 mức: naive = doc_id gold có trong top-3; strict = chunk chứa chu�
     #1 0.647 ✓ su-dung-phong-hoc-nhom#0           [all] # Hướng dẫn sử dụng phòng học nhóm / phòng thuyết trình ↵ ## Phòng học nhóm ↵ - Số lượng phòng: 04 ↵ - Vị trí…
     #2 0.579   huong-dan-su-dung-thu-vien#8       [all] Huit; Thu nhận luận văn, luận án, đề tài NCKH; Tủ sách trao đổi tri thức; Dịch vụ in, scan tài liệu (1.000đ/ …
     #3 0.541   huong-dan-su-dung-thu-vien#9       [all] 00 - 16:30 | Không gian học tập chung (129 chỗ ngồi); Phòng đọc nghiên cứu dành cho GV, CBVC (12 chỗ ngồi); T…
-      → doc rank=1 (naive 2đ) | evidence rank=1 | agent: đúng → 2đ
+      → doc rank=1 (naive 2đ) | evidence rank=1 | agent: thiếu/sai đáp án → 1đ
       agent: Để đặt phòng học nhóm, bạn cần đến tầng 3 của thư viện. Mỗi phòng học nhóm có thể chứa từ 5-7 người ngồi. Thời gian sử dụng mỗi phòng là 2 giờ/lượt, nhưng có thể gia hạn nếu không có người chờ mượn. Nguồn: [1]
-  Tổng fixed: naive 8/10 | strict 7/10
+  Tổng fixed: naive 8/10 | strict 6/10
 
 ## Chiến lược: recursive — RecursiveChunker
 Đã nạp 77 chunk | avg=381 min=107 max=500 ký tự
@@ -91,9 +91,9 @@ Chấm 2 mức: naive = doc_id gold có trong top-3; strict = chunk chứa chu�
     #1 0.669 ✓ su-dung-phong-hoc-nhom#0           [all] # Hướng dẫn sử dụng phòng học nhóm / phòng thuyết trình ↵ ## Phòng học nhóm ↵ - Số lượng phòng: 04 ↵ - Vị trí…
     #2 0.618   huong-dan-su-dung-thu-vien#9       [all] | Tầng 3 (443 m2) | 7:00 - 19:30 | Không gian học tập chung (188 chỗ ngồi); 04 phòng thảo luận nhóm (7 chỗ ng…
     #3 0.592 ✓ su-dung-phong-hoc-nhom#2           [all] - Số lượng phòng: 01 ↵ - Vị trí: Tầng 4 ↵ - Mục đích sử dụng: Thuyết trình các nội dung phục vụ giảng dạy và …
-      → doc rank=1 (naive 2đ) | evidence rank=1 | agent: đúng → 2đ
+      → doc rank=1 (naive 2đ) | evidence rank=1 | agent: thiếu/sai đáp án → 1đ
       agent: Để đặt phòng học nhóm, bạn cần liên hệ với bộ phận quản lý tài nguyên học tập hoặc trực tiếp đến văn phòng của họ. Thông thường, thời gian sử dụng một phòng học nhóm là 02 giờ/lượt và có thể gia hạn nếu không có người chờ mượn. [1]
-  Tổng recursive: naive 8/10 | strict 5/10
+  Tổng recursive: naive 8/10 | strict 4/10
 
 ## Chiến lược: heading — HeadingChunker
 Đã nạp 99 chunk | avg=357 min=71 max=500 ký tự
@@ -130,9 +130,9 @@ Chấm 2 mức: naive = doc_id gold có trong top-3; strict = chunk chứa chu�
     #1 0.712 ✓ su-dung-phong-hoc-nhom#0           [all] Hướng dẫn sử dụng phòng học nhóm / phòng thuyết trình > Phòng học nhóm ↵ - Số lượng phòng: 04 ↵ - Vị trí: Tần…
     #2 0.687 ✓ su-dung-phong-hoc-nhom#2           [all] Hướng dẫn sử dụng phòng học nhóm / phòng thuyết trình > Phòng thuyết trình ↵ - Số lượng phòng: 01 ↵ - Vị trí:…
     #3 0.632   su-dung-phong-hoc-nhom#1           [all] Hướng dẫn sử dụng phòng học nhóm / phòng thuyết trình > Phòng hội thảo ↵ - Số lượng phòng: 01 ↵ - Vị trí: Tần…
-      → doc rank=1 (naive 2đ) | evidence rank=1 | agent: đúng → 2đ
+      → doc rank=1 (naive 2đ) | evidence rank=1 | agent: thiếu/sai đáp án → 1đ
       agent: Để đặt phòng học nhóm, bạn cần liên hệ với bộ phận quản lý tài nguyên học tập hoặc trực tiếp đến các phòng học. Thời gian sử dụng cho mỗi phòng là 02 giờ/lượt, và có thể gia hạn khi không có người chờ mượn. [1]
-  Tổng heading: naive 8/10 | strict 6/10
+  Tổng heading: naive 8/10 | strict 5/10
 
 ## Chiến lược: heading_v2 — HeadingChunker
 Đã nạp 103 chunk | avg=344 min=71 max=500 ký tự
@@ -169,9 +169,9 @@ Chấm 2 mức: naive = doc_id gold có trong top-3; strict = chunk chứa chu�
     #1 0.712 ✓ su-dung-phong-hoc-nhom#0           [all] Hướng dẫn sử dụng phòng học nhóm / phòng thuyết trình > Phòng học nhóm ↵ - Số lượng phòng: 04 ↵ - Vị trí: Tần…
     #2 0.687 ✓ su-dung-phong-hoc-nhom#2           [all] Hướng dẫn sử dụng phòng học nhóm / phòng thuyết trình > Phòng thuyết trình ↵ - Số lượng phòng: 01 ↵ - Vị trí:…
     #3 0.632   su-dung-phong-hoc-nhom#1           [all] Hướng dẫn sử dụng phòng học nhóm / phòng thuyết trình > Phòng hội thảo ↵ - Số lượng phòng: 01 ↵ - Vị trí: Tần…
-      → doc rank=1 (naive 2đ) | evidence rank=1 | agent: đúng → 2đ
+      → doc rank=1 (naive 2đ) | evidence rank=1 | agent: thiếu/sai đáp án → 1đ
       agent: Để đặt phòng học nhóm, bạn cần liên hệ với bộ phận quản lý tài nguyên học tập hoặc trực tiếp đến các phòng học. Thời gian sử dụng cho mỗi phòng là 02 giờ/lượt, và có thể gia hạn khi không có người chờ mượn. [1]
-  Tổng heading_v2: naive 8/10 | strict 7/10
+  Tổng heading_v2: naive 8/10 | strict 6/10
 
 ## A/B metadata filter — Q1: Tôi được mượn tối đa bao nhiêu tài liệu về nhà, trong bao nhiêu ngày?
   [fixed] không filter
@@ -249,7 +249,7 @@ Chấm 2 mức: naive = doc_id gold có trong top-3; strict = chunk chứa chu�
 
 ## Tổng hợp (strict / naive)
   chiến lược   Q1    Q2    Q3    Q4    Q5    strict  naive
-  fixed        2/2   2/2   0/0   1/2   2/2      7/10    8/10
-  recursive    0/2   2/2   0/0   1/2   2/2      5/10    8/10
-  heading      2/2   2/2   0/0   0/2   2/2      6/10    8/10
-  heading_v2   2/2   2/2   0/0   1/2   2/2      7/10    8/10
+  fixed        2/2   2/2   0/0   1/2   1/2      6/10    8/10
+  recursive    0/2   2/2   0/0   1/2   1/2      4/10    8/10
+  heading      2/2   2/2   0/0   0/2   1/2      5/10    8/10
+  heading_v2   2/2   2/2   0/0   1/2   1/2      6/10    8/10

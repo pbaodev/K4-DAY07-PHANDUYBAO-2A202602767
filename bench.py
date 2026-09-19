@@ -1,6 +1,6 @@
 """Benchmark 5 câu hỏi trên corpus thư viện HUIT với từng chiến lược chunking.
 
-    python bench.py                      # cả 3 chiến lược + A/B filter, ghi ket_qua_benchmark.txt
+    python bench.py                      # cả 4 chiến lược + A/B filter, ghi ket_qua_benchmark.txt
     python bench.py --strategy heading   # một chiến lược, chỉ in ra màn hình
     python bench.py --no-llm             # bỏ câu trả lời của agent (chạy nhanh)
 
@@ -89,7 +89,8 @@ QUERIES = [
         "gold_answer": "Đăng ký tại Quầy thông tin hoặc trực tuyến mục “ĐẶT PHÒNG”; 2 giờ/lượt, gia hạn khi không có người chờ; trễ >15 phút bị hủy",
         "gold_docs": ["su-dung-phong-hoc-nhom", "quy-dinh-chung"],
         "evidence": r"02 giờ/lượt|120 phút/lượt",
-        "answer_check": r"0?2 giờ|120 phút|hai giờ",
+        # Câu hỏi hai vế: phải có cả cách đặt (Quầy thông tin / ĐẶT PHÒNG) lẫn thời lượng mới tính là đúng.
+        "answer_check": r"(?s)(?=.*(0?2 giờ|120 phút|hai giờ))(?=.*([Qq]uầy thông tin|ĐẶT PHÒNG|đăng ký trực tuyến))",
     },
 ]
 
