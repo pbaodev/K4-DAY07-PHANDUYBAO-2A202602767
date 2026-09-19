@@ -123,15 +123,20 @@ class HeadingChunker:
     Regulation documents are written as numbered sections, so a section is already a
     self-contained unit chosen by the author. Every chunk starts with its heading path
     (e.g. "Title > 5. Mượn/trả > a. Mượn tài liệu") so it keeps its context; a section
-    longer than chunk_size is split further with RecursiveChunker and each sub-chunk
-    gets the same heading path.
+    longer than chunk_size is split further and each sub-chunk gets the same heading path.
+
+    glue_lead_in=True: when a long section is split, a paragraph ending with ":" (a lead-in
+    such as "... theo từng đối tượng như sau:") is kept with the list/table that follows it.
+    Plain recursive merging packs greedily forward and can glue the lead-in to the block
+    *before* it, leaving the list that answers the question without its subject.
     """
 
     HEADING_PATTERN = re.compile(r"^(#{1,6})\s+(.*\S)\s*$")
 
-    def __init__(self, chunk_size: int = 500, max_level: int = 3) -> None:
+    def __init__(self, chunk_size: int = 500, max_level: int = 3, glue_lead_in: bool = True) -> None:
         self.chunk_size = chunk_size
         self.max_level = max_level
+        self.glue_lead_in = glue_lead_in
 
     def chunk(self, text: str) -> list[str]:
         if not text or not text.strip():
@@ -164,9 +169,44 @@ class HeadingChunker:
             prefix = f"{heading_path}\n" if heading_path else ""
             # Leave room for the prefix, but never shrink the body budget below half of chunk_size.
             budget = max(self.chunk_size - len(prefix), self.chunk_size // 2)
-            pieces = [content] if len(content) <= budget else RecursiveChunker(chunk_size=budget).chunk(content)
+            if len(content) <= budget:
+                pieces = [content]
+            elif self.glue_lead_in:
+                pieces = self._split_keeping_lead_ins(content, budget)
+            else:
+                pieces = RecursiveChunker(chunk_size=budget).chunk(content)
             chunks.extend(prefix + piece for piece in pieces)
         return chunks
+
+    @staticmethod
+    def _split_keeping_lead_ins(content: str, budget: int) -> list[str]:
+        blocks: list[str] = []
+        for block in (b.strip() for b in content.split("\n\n")):
+            if not block:
+                continue
+            if blocks and blocks[-1].endswith(":"):
+                blocks[-1] = f"{blocks[-1]}\n\n{block}"
+            else:
+                blocks.append(block)
+
+        # Same merge-up as RecursiveChunker, but over blocks that already carry their lead-in.
+        pieces: list[str] = []
+        buffer = ""
+        for block in blocks:
+            candidate = f"{buffer}\n\n{block}" if buffer else block
+            if len(candidate) <= budget:
+                buffer = candidate
+                continue
+            if buffer:
+                pieces.append(buffer)
+            buffer = ""
+            if len(block) <= budget:
+                buffer = block
+            else:
+                pieces.extend(RecursiveChunker(chunk_size=budget).chunk(block))
+        if buffer:
+            pieces.append(buffer)
+        return pieces
 
 
 def _dot(a: list[float], b: list[float]) -> float:

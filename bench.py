@@ -46,7 +46,9 @@ BASELINE_DOCS = ["quy-dinh-chung", "luu-hanh-tai-lieu", "huong-dan-su-dung-thu-v
 STRATEGIES = {
     "fixed": lambda: FixedSizeChunker(chunk_size=CHUNK_SIZE, overlap=50),
     "recursive": lambda: RecursiveChunker(chunk_size=CHUNK_SIZE),
-    "heading": lambda: HeadingChunker(chunk_size=CHUNK_SIZE),
+    "heading": lambda: HeadingChunker(chunk_size=CHUNK_SIZE, glue_lead_in=False),
+    # Bản tinh chỉnh sau phân tích lỗi Q4: giữ câu dẫn kết thúc bằng ":" đi cùng danh sách/bảng phía sau.
+    "heading_v2": lambda: HeadingChunker(chunk_size=CHUNK_SIZE, glue_lead_in=True),
 }
 
 # evidence: chuỗi (regex) phải có trong chunk thì chunk đó mới thực sự trả lời được câu hỏi.
