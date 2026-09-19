@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hỏi thư viện HUIT</title>
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #F7F4EC;
+    --paper-2: #EEE9DC;
+    --card: #FBFAF6;
+    --white: #FFFFFF;
+    --ink: #1C2A2B;
+    --ink-2: #4A5553;
+    --muted: #5E6967;
+    --line: #DDD6C6;
+    --accent: #C2410C;
+    --accent-soft: #FBE9DF;
+    --green: #2F6F5E;
+    --green-soft: #E3EFE9;
+    --red: #B42318;
+    --red-soft: #FCE8E6;
+    --blue: #1F4E8C;
+    --blue-soft: #E4ECF7;
+    --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+    --sans: "Be Vietnam Pro", -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font: 17px/1.5 var(--sans); }
+  button, input, select { font: inherit; color: inherit; }
+  :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+  header {
+    display: flex; flex-wrap: wrap; gap: 10px 24px; align-items: center; justify-content: space-between;
+    padding: 18px 32px; border-bottom: 1px solid var(--line);
+  }
+  .brand { display: flex; flex-direction: column; gap: 2px; }
+  .eyebrow { font-size: 13px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin: 0; }
+  h1 { margin: 0; font: 600 28px/1.15 var(--serif); }
+  .status { display: flex; flex-wrap: wrap; gap: 8px; font-size: 14px; color: var(--ink-2); }
+  .pill { background: var(--paper-2); border-radius: 999px; padding: 4px 12px; white-space: nowrap; }
+  .pill.warn { background: var(--red-soft); color: var(--red); font-weight: 600; }
+  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--muted); margin-right: 6px; vertical-align: 1px; }
+  .dot.ok { background: var(--green); }
+  .dot.bad { background: var(--red); }
+
+  main { max-width: 1840px; margin: 0 auto; padding: 24px 32px 56px; display: flex; flex-direction: column; gap: 22px; }
+
+  .ask { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 20px 22px; display: flex; flex-direction: column; gap: 14px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .label { font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); min-width: 84px; }
+  .chip {
+    border: 1.5px solid var(--line); background: var(--white); border-radius: 999px; padding: 5px 14px;
+    font-size: 15px; cursor: pointer; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .chip:hover { border-color: var(--ink-2); }
+  .chip.scenario { background: var(--ink); border-color: var(--ink); color: var(--paper); font-weight: 600; }
+  .chip.scenario:hover { background: #2B3D3E; }
+  .chip.scenario.fail { background: var(--accent); border-color: var(--accent); }
+  .chip.scenario.fail:hover { background: #A63609; }
+
+  form.row { display: flex; gap: 10px; }
+  #q {
+    flex: 1; min-width: 0; font-size: 20px; padding: 12px 16px; border: 1.5px solid var(--line);
+    border-radius: 12px; background: var(--white);
+  }
+  #q:focus-visible { outline: none; border-color: var(--ink); box-shadow: 0 0 0 3px var(--paper-2); }
+  .primary {
+    background: var(--ink); color: var(--paper); border: 0; border-radius: 12px; padding: 0 28px;
+    font-weight: 700; font-size: 18px; cursor: pointer;
+  }
+  .primary:disabled { opacity: .55; cursor: progress; }
+
+  .controls { display: flex; flex-wrap: wrap; gap: 12px 28px; align-items: center; }
+  .field { display: flex; gap: 8px; align-items: center; font-size: 15px; color: var(--ink-2); }
+  select { font-size: 15px; padding: 6px 10px; border-radius: 8px; border: 1.5px solid var(--line); background: var(--white); }
+  select:disabled { opacity: .5; }
+  .seg { display: inline-flex; border: 1.5px solid var(--line); border-radius: 9px; overflow: hidden; background: var(--white); }
+  .seg button { border: 0; background: transparent; padding: 6px 14px; font-size: 15px; cursor: pointer; }
+  .seg button + button { border-left: 1.5px solid var(--line); }
+  .seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+
+  .gold { display: none; gap: 10px; align-items: baseline; background: var(--green-soft); border-radius: 10px; padding: 10px 14px; font-size: 16px; }
+  .gold.show { display: flex; }
+  .gold b { color: var(--green); white-space: nowrap; }
+
+  .columns { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr)); align-items: start; }
+  .empty { text-align: center; color: var(--muted); padding: 56px 16px; border: 1.5px dashed var(--line); border-radius: 16px; }
+  .empty p { margin: 4px 0; }
+
+  .col { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+  .col-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; border-bottom: 2px solid var(--ink); padding-bottom: 6px; }
+  .col-head h2 { margin: 0; font: 600 21px/1.2 var(--serif); }
+  .col-head span { font-size: 14px; color: var(--muted); font-family: var(--mono); }
+
+  .answer {
+    background: var(--white); border: 1px solid var(--line); border-left: 6px solid var(--line);
+    border-radius: 12px; padding: 14px 18px; min-height: 96px; display: flex; flex-direction: column; gap: 8px;
+  }
+  .answer.ok { border-left-color: var(--green); }
+  .answer.bad { border-left-color: var(--red); }
+  .answer.plain { border-left-color: var(--ink); }
+  .answer-text { margin: 0; font-size: 19px; line-height: 1.5; white-space: pre-wrap; }
+  .answer-meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 13px; color: var(--muted); }
+  .verdict { font-size: 13px; font-weight: 700; border-radius: 999px; padding: 2px 10px; }
+  .verdict.ok { background: var(--green-soft); color: var(--green); }
+  .verdict.bad { background: var(--red-soft); color: var(--red); }
+  .waiting { color: var(--muted); font-size: 16px; display: flex; gap: 10px; align-items: center; }
+  .pulse { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); animation: pulse 1s ease-in-out infinite; }
+  .waiting.queued .pulse { background: var(--line); animation: none; }
+  @keyframes pulse { 50% { opacity: .25; transform: scale(.7); } }
+  .cite { font: 600 14px var(--mono); background: var(--accent-soft); color: var(--accent); border-radius: 4px; padding: 0 4px; cursor: default; }
+  .error { color: var(--red); font-size: 15px; margin: 0; }
+
+  .card { background: var(--white); border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px; display: flex; flex-direction: column; gap: 6px; transition: box-shadow .15s; }
+  .card.evidence { border-color: var(--green); box-shadow: inset 5px 0 0 var(--green); }
+  .card.hl { box-shadow: 0 0 0 3px var(--accent); }
+  .card.evidence.hl { box-shadow: inset 5px 0 0 var(--green), 0 0 0 3px var(--accent); }
+  .card-head { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; font-size: 14px; }
+  .rank { font: 700 17px var(--serif); }
+  .score { font-family: var(--mono); font-size: 14px; }
+  .bar { width: 64px; height: 6px; background: var(--paper-2); border-radius: 3px; overflow: hidden; }
+  .bar i { display: block; height: 100%; background: var(--accent); }
+  .badge { font-size: 12px; font-weight: 700; border-radius: 6px; padding: 1px 8px; background: var(--paper-2); color: var(--ink-2); }
+  .badge.student { background: var(--blue-soft); color: var(--blue); }
+  .badge.faculty { background: var(--accent-soft); color: var(--accent); }
+  .badge.ev { background: var(--green-soft); color: var(--green); }
+  .src { font-size: 13px; color: var(--muted); overflow-wrap: anywhere; }
+  .src code { font-family: var(--mono); color: var(--ink-2); }
+  .content { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 15px; line-height: 1.45; max-height: calc(5 * 1.45em); overflow: hidden; }
+  .card.open .content { max-height: none; }
+  .more { align-self: flex-start; border: 0; background: none; padding: 0; font-size: 13px; font-weight: 600; color: var(--accent); cursor: pointer; }
+  .note { font-size: 14px; border-radius: 10px; padding: 10px 14px; background: var(--paper-2); color: var(--ink-2); margin: 0; }
+  .note.miss { background: var(--red-soft); color: var(--red); }
+  .note code { font-family: var(--mono); }
+
+  footer { max-width: 1840px; margin: 0 auto; padding: 0 32px 32px; font-size: 13px; color: var(--muted); }
+
+  @media (max-width: 700px) {
+    header, main, footer { padding-left: 16px; padding-right: 16px; }
+    form.row { flex-direction: column; }
+    .primary { padding: 12px; }
+    .label { min-width: 0; width: 100%; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <p class="eyebrow">Lab 07 · Demo</p>
+    <h1>Hỏi thư viện HUIT</h1>
+  </div>
+  <div class="status" id="status"><span class="pill">Đang kết nối…</span></div>
+</header>
+
+<main>
+  <section class="ask" aria-label="Câu hỏi">
+    <div class="chips" id="scenarios">
+      <span class="label">Kịch bản</span>
+      <button type="button" class="chip scenario" data-scenario="filter">1 · Filter đổi câu trả lời</button>
+      <button type="button" class="chip scenario fail" data-scenario="failure">2 · Một lỗi thật</button>
+      <button type="button" class="chip scenario" data-scenario="strategies">3 · So sánh 4 chiến lược</button>
+    </div>
+    <div class="chips" id="presets"><span class="label">Benchmark</span></div>
+
+    <form class="row" id="ask-form">
+      <input id="q" type="text" autocomplete="off" maxlength="500" placeholder="Gõ câu hỏi về thư viện HUIT…" aria-label="Câu hỏi">
+      <button class="primary" id="ask-btn" type="submit">Hỏi</button>
+    </form>
+
+    <div class="controls">
+      <div class="field">So sánh
+        <div class="seg" role="group" aria-label="Chế độ so sánh">
+          <button type="button" data-mode="filter" aria-pressed="true">Có / không filter</button>
+          <button type="button" data-mode="strategies" aria-pressed="false">4 chiến lược</button>
+        </div>
+      </div>
+      <label class="field">Chiến lược <select id="strategy"></select></label>
+      <label class="field">Lọc audience
+        <select id="audience">
+          <option value="">không lọc</option>
+          <option value="student">student</option>
+          <option value="faculty">faculty</option>
+          <option value="all">all</option>
+          <option value="student+all">student + all</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="gold" id="gold"><b>Đáp án chuẩn</b><span id="gold-text"></span></div>
+  </section>
+
+  <section class="columns" id="columns" aria-live="polite">
+    <div class="empty">
+      <p><b>Chọn một kịch bản demo, một câu benchmark, hoặc tự gõ câu hỏi.</b></p>
+      <p>Mỗi cột hiện top-3 chunk trước, sau đó là câu trả lời của agent (mất khoảng 5–15 giây).</p>
+    </div>
+  </section>
+</main>
+
+<footer id="foot"></footer>
+
+<script>
+  const $ = (sel) => document.querySelector(sel);
+  const el = (tag, cls, text) => {
+    const node = document.createElement(tag);
+    if (cls) node.className = cls;
+    if (text !== undefined) node.textContent = text;
+    return node;
+  };
+
+  const FILTERS = {
+    "": null,
+    student: { audience: "student" },
+    faculty: { audience: "faculty" },
+    all: { audience: "all" },
+    "student+all": { audience: ["student", "all"] },
+  };
+  const FILTER_LABEL = {
+    "": "không filter",
+    student: "audience = student",
+    faculty: "audience = faculty",
+    all: "audience = all",
+    "student+all": "audience ∈ {student, all}",
+  };
+
+  const state = { info: null, mode: "filter", run: 0 };
+
+  async function api(path, body) {
+    const init = body
+      ? { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }
+      : undefined;
+    const res = await fetch(path, init);
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      const error = new Error(data.error || `HTTP ${res.status}`);
+      error.status = res.status;
+      throw error;
+    }
+    return data;
+  }
+
+  // ---------- header, presets, controls ----------
+  function setLlmStatus(ready) {
+    const dot = $("#llm-dot");
+    if (dot) dot.className = "dot " + (ready ? "ok" : "bad");
+  }
+
+  function renderStatus(info) {
+    const status = $("#status");
+    status.replaceChildren();
+    const emb = el("span", "pill" + (info.mock ? " warn" : ""), (info.mock ? "MOCK embedder: số liệu vô nghĩa" : info.embedder));
+    const llm = el("span", "pill");
+    const dot = el("span", "dot " + (info.llm.ready ? "ok" : "bad"));
+    dot.id = "llm-dot";
+    llm.append(dot, info.llm.model);
+    status.append(emb, llm, el("span", "pill", `${info.documents} tài liệu · chunk ${info.chunk_size} · top-${info.top_k}`));
+    $("#foot").textContent = info.llm.ready
+      ? "Chạy hoàn toàn trên máy: sentence-transformers + Ollama. Retrieval dùng EmbeddingStore của src/, không gọi dịch vụ ngoài."
+      : "Ollama chưa sẵn sàng: vẫn xem được retrieval; chạy `ollama serve` rồi hỏi lại để có câu trả lời.";
+  }
+
+  function renderPresets(info) {
+    const box = $("#presets");
+    info.presets.forEach((preset, i) => {
+      const chip = el("button", "chip", `Q${i + 1} · ${preset.query}`);
+      chip.type = "button";
+      chip.title = preset.query;
+      chip.addEventListener("click", () => {
+        $("#q").value = preset.query;
+        $("#audience").value = preset.filter ? preset.filter.audience : "";
+        ask();
+      });
+      box.append(chip);
+    });
+  }
+
+  function renderStrategies(info) {
+    const select = $("#strategy");
+    for (const [name, size] of Object.entries(info.strategies)) {
+      const option = el("option", "", `${name} · ${size} chunk`);
+      option.value = name;
+      select.append(option);
+    }
+    select.value = "heading_v2" in info.strategies ? "heading_v2" : Object.keys(info.strategies)[0];
+  }
+
+  function setMode(mode) {
+    state.mode = mode;
+    document.querySelectorAll(".seg button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.mode === mode)));
+    $("#strategy").disabled = mode === "strategies";
+  }
+
+  function updateGold() {
+    const question = $("#q").value.trim();
+    const preset = state.info && state.info.presets.find((p) => p.query === question);
+    $("#gold").classList.toggle("show", Boolean(preset));
+    $("#gold-text").textContent = preset ? preset.gold_answer : "";
+  }
+
+  const SCENARIOS = {
+    // Demo 1: heading (chưa tinh chỉnh) để thấy rõ không filter thì lẫn "180 ngày" của giảng viên.
+    filter: { preset: 0, strategy: "heading", audience: "student", mode: "filter" },
+    // Demo 2: Q3 — chunk mượn thường thắng chunk liên thư viện, agent trả lời sai nhưng vẫn trích nguồn.
+    failure: { preset: 2, strategy: "heading_v2", audience: "", mode: "filter" },
+    // Q1 trên cả 4 chiến lược, không filter: ai giữ được câu dẫn cùng bảng hạn mức.
+    strategies: { preset: 0, strategy: "heading_v2", audience: "", mode: "strategies" },
+  };
+
+  function runScenario(name) {
+    const s = SCENARIOS[name];
+    $("#q").value = state.info.presets[s.preset].query;
+    $("#strategy").value = s.strategy;
+    $("#audience").value = s.audience;
+    setMode(s.mode);
+    ask();
+  }
+
+  // ---------- columns ----------
+  function arms() {
+    const strategy = $("#strategy").value;
+    const aud = $("#audience").value;
+    if (state.mode === "strategies") {
+      return Object.keys(state.info.strategies).map((name) => ({
+        title: name, sub: FILTER_LABEL[aud], strategy: name, filter: FILTERS[aud],
+      }));
+    }
+    const list = [{ title: "Không filter", sub: strategy, strategy, filter: null }];
+    if (aud) list.push({ title: FILTER_LABEL[aud], sub: strategy, strategy, filter: FILTERS[aud] });
+    return list;
+  }
+
+  function makeColumn(arm) {
+    const col = el("article", "col");
+    const head = el("div", "col-head");
+    head.append(el("h2", "", arm.title), el("span", "", arm.sub));
+    const answer = el("div", "answer");
+    const wait = el("div", "waiting queued");
+    wait.append(el("span", "pulse"), el("span", "", "Chờ lượt trả lời…"));
+    answer.append(wait);
+    const cards = el("div", "col");
+    cards.append(el("p", "note", "Đang tìm top-3…"));
+    col.append(head, answer, cards);
+    return { col, answer, cards, arm };
+  }
+
+  function renderCards(view, data) {
+    const { cards } = view;
+    cards.replaceChildren();
+    if (!data.results.length) {
+      cards.append(el("p", "note miss", "Không có chunk nào qua được filter."));
+      return;
+    }
+    for (const r of data.results) {
+      const card = el("div", "card" + (r.evidence ? " evidence" : ""));
+      card.dataset.rank = r.rank;
+      const head = el("div", "card-head");
+      const bar = el("span", "bar");
+      const fill = el("i");
+      fill.style.width = `${Math.max(0, Math.min(1, r.score)) * 100}%`;
+      bar.append(fill);
+      head.append(el("span", "rank", `#${r.rank}`), bar, el("span", "score", r.score.toFixed(3)));
+      if (r.audience) head.append(el("span", `badge ${r.audience}`, r.audience));
+      if (r.evidence) head.append(el("span", "badge ev", "✓ chứa đáp án"));
+      const src = el("div", "src");
+      src.append(el("code", "", r.id), document.createTextNode(r.title ? ` · ${r.title}` : ""));
+      const content = el("p", "content", r.content);
+      card.append(head, src, content);
+      cards.append(card);
+      requestAnimationFrame(() => {
+        if (content.scrollHeight <= content.clientHeight + 2) return;
+        const more = el("button", "more");
+        more.type = "button";
+        const sync = () => { more.textContent = card.classList.contains("open") ? "Thu gọn ▴" : "Xem đủ ▾"; };
+        more.addEventListener("click", () => { card.classList.toggle("open"); sync(); });
+        if (r.evidence) card.classList.add("open"); // chunk chứa đáp án: mở sẵn để thấy dòng đáp án
+        sync();
+        card.append(more);
+      });
+    }
+    if ("evidence" in data) {
+      const ev = data.evidence;
+      const topK = state.info.top_k;
+      if (!ev) {
+        cards.append(el("p", "note miss", `Filter đã loại hết chunk chứa đáp án (còn ${data.candidates} ứng viên).`));
+      } else if (ev.rank > topK) {
+        const note = el("p", "note miss");
+        note.append(
+          `Chunk chứa đáp án xếp #${ev.rank} (${ev.score.toFixed(3)}, `,
+          el("code", "", ev.id),
+          `): ngoài top-${topK}, agent không nhìn thấy.`
+        );
+        cards.append(note);
+      }
+    }
+  }
+
+  function citedText(text, view) {
+    const p = el("p", "answer-text");
+    for (const part of text.split(/(\[\d+\])/)) {
+      const m = part.match(/^\[(\d+)\]$/);
+      if (!m) { p.append(part); continue; }
+      const cite = el("span", "cite", part);
+      const target = () => view.cards.querySelector(`.card[data-rank="${m[1]}"]`);
+      cite.addEventListener("mouseenter", () => target()?.classList.add("hl"));
+      cite.addEventListener("mouseleave", () => target()?.classList.remove("hl"));
+      p.append(cite);
+    }
+    return p;
+  }
+
+  function renderAnswer(view, data) {
+    const { answer } = view;
+    answer.replaceChildren();
+    const verdict = data.verdict;
+    answer.className = "answer " + (verdict ? (verdict.ok ? "ok" : "bad") : "plain");
+    const meta = el("div", "answer-meta");
+    if (verdict) {
+      const label = verdict.ok ? "✓ Đúng đáp án" : `✗ ${verdict.label.charAt(0).toUpperCase()}${verdict.label.slice(1)}`;
+      meta.append(el("span", `verdict ${verdict.ok ? "ok" : "bad"}`, label));
+    }
+    meta.append(el("span", "", `${state.info.llm.model} · ${data.seconds}s`));
+    answer.append(citedText(data.answer, view), meta);
+  }
+
+  function renderAnswerError(view, error) {
+    view.answer.className = "answer bad";
+    view.answer.replaceChildren(el("p", "error", error.message));
+    if (error.status === 503) setLlmStatus(false);
+  }
+
+  function startWaiting(view) {
+    const started = performance.now();
+    const label = el("span", "", `${state.info.llm.model} đang trả lời…`);
+    const wait = el("div", "waiting");
+    wait.append(el("span", "pulse"), label);
+    view.answer.className = "answer";
+    view.answer.replaceChildren(wait);
+    const timer = setInterval(() => {
+      label.textContent = `${state.info.llm.model} đang trả lời… ${Math.round((performance.now() - started) / 1000)}s`;
+    }, 500);
+    return () => clearInterval(timer);
+  }
+
+  async function ask() {
+    const question = $("#q").value.trim();
+    if (!question || !state.info) return;
+    const run = ++state.run;
+    updateGold();
+    const button = $("#ask-btn");
+    button.disabled = true;
+
+    const views = arms().map(makeColumn);
+    $("#columns").replaceChildren(...views.map((v) => v.col));
+    const payload = (arm) => ({ question, strategy: arm.strategy, filter: arm.filter });
+
+    // Retrieval is fast: fetch every column at once.
+    await Promise.all(views.map(async (view) => {
+      try {
+        const data = await api("/api/search", payload(view.arm));
+        if (run === state.run) renderCards(view, data);
+      } catch (error) {
+        if (run === state.run) view.cards.replaceChildren(el("p", "error", error.message));
+      }
+    }));
+
+    // Ollama answers one prompt at a time, so ask column by column and let each finish visibly.
+    for (const view of views) {
+      if (run !== state.run) return;
+      const stop = startWaiting(view);
+      try {
+        const data = await api("/api/answer", payload(view.arm));
+        if (run === state.run) { renderAnswer(view, data); setLlmStatus(true); }
+      } catch (error) {
+        if (run === state.run) renderAnswerError(view, error);
+      } finally {
+        stop();
+      }
+    }
+    if (run === state.run) button.disabled = false;
+  }
+
+  // ---------- wiring ----------
+  $("#ask-form").addEventListener("submit", (event) => { event.preventDefault(); ask(); });
+  $("#q").addEventListener("input", updateGold);
+  document.querySelectorAll(".seg button").forEach((b) => b.addEventListener("click", () => setMode(b.dataset.mode)));
+  document.querySelectorAll("[data-scenario]").forEach((b) => b.addEventListener("click", () => runScenario(b.dataset.scenario)));
+
+  api("/api/info")
+    .then((info) => {
+      state.info = info;
+      renderStatus(info);
+      renderStrategies(info);
+      renderPresets(info);
+      $("#q").focus();
+      // Mở thẳng một kịch bản: /#filter, /#failure, /#strategies
+      const scenario = location.hash.slice(1);
+      if (scenario in SCENARIOS) runScenario(scenario);
+    })
+    .catch((error) => {
+      $("#status").replaceChildren(el("span", "pill warn", `Không kết nối được server: ${error.message}`));
+    });
+</script>
+</body>
+</html>
